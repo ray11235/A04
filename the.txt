@@ -3,29 +3,35 @@ use strict;
 use warnings;
 
 my $now = localtime;
-print "The date is $now\n\n";
+print "The date is $now\n";
 
-if (@ARGV != 2) {
-    die "Usage: $0 <number1> <number2>\n";
+sub calculator {
+    my ($operator, @numbers) = @_;
+    
+    if ($operator eq '+') {
+        return add(@numbers);
+    }
+    elsif ($operator eq '*') {
+        return multiply(@numbers);
+    }
+    else {
+        die "Invalid operator: $operator. Use '+' or '*'.\n";
+    }
 }
 
-my ($num1, $num2) = @ARGV;
-
-if ($num1 !~ /^-?\d+$/ || $num2 !~ /^-?\d+$/) {
-    die "Error: Both arguments must be whole numbers\n";
+sub add {
+    my @numbers = @_;
+    my $sum = 0;
+    $sum += $_ for @numbers;
+    return $sum;
 }
 
-my $sum = $num1 + $num2;
-my $product = $num1 * $num2;
-
-my $percent;
-if ($num2 == 0) {
-    $percent = "N/A (div by 0)";
-} else {
-    $percent = sprintf("%.2f%%", ($num1 / $num2) * 100);
+sub multiply {
+    my @numbers = @_;
+    my $product = 1;
+    $product *= $_ for @numbers;
+    return $product;
 }
 
-printf "%-10s %-10s %-10s %-10s %-15s\n", "Number 1", "Number 2", "Sum", "Product", "Percent";
-printf "%-10s %-10s %-10s %-10s %-15s\n", "-" x 10, "-" x 10, "-" x 10, "-" x 10, "-" x 15;
-
-printf "%-10d %-10d %-10d %-10d %-15s\n", $num1, $num2, $sum, $product, $percent;
+print "Sum of 1, 2, 3, 4: ", calculator('+', 1, 2, 3, 4), "\n";
+print "Product of 1, 2, 3, 4: ", calculator('*', 1, 2, 3, 4), "\n";
