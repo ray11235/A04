@@ -1,0 +1,33 @@
+#!/bin/perl
+use strict;
+use warnings;
+
+my $now = localtime;
+print "The date is $now\n\n";
+
+print "Please enter a string: ";
+chomp(my $input = <STDIN>);
+
+if ($input =~ /a.*b.*c/) {
+    print "The string matches condition 1: it contains 'a', followed by 'b', followed by 'c' (with any characters in between, including none).\n";
+} else {
+    print "The string does NOT match condition 1.\n";
+}
+
+if ($input =~ /a.+b.+c/) {
+    print "The string matches condition 2: it contains 'a', followed by at least one character, then 'b', then at least one character, then 'c'.\n";
+} else {
+    print "The string does NOT match condition 2.\n";
+}
+
+if ($input =~ /a[^b]*$/) {
+    print "The string matches condition 3: it contains an 'a' with no 'b' after it.\n";
+} elsif ($input !~ /a/) {
+    print "The string does NOT match condition 3: it does not contain an 'a' at all.\n";
+} else {
+    print "The string does NOT match condition 3: it contains an 'a' followed somewhere later by a 'b'.\n";
+}
+
+print "\n";
+
+__END__
