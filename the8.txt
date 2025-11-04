@@ -1,0 +1,25 @@
+#!/bin/perl
+use strict;
+use warnings;
+
+my $now = localtime;
+print "The date is $now\n\n";
+
+while (my $line = <STDIN>) {
+    chomp $line;
+    my $original = $line;
+
+    my $upper = $line;
+    $upper =~ s/([a-z])/chr(ord($1) - 32)/ge;
+
+    my $lower = $line;
+    $lower =~ s/([A-Z])/chr(ord($1) + 32)/ge;
+
+    my $title = $lower;
+    $title =~ s/^([a-z])/chr(ord($1) - 32)/e;
+
+    print "Original: $original\n";
+    print "Uppercase: $upper\n";
+    print "Lowercase: $lower\n";
+    print "Title case: $title\n\n";
+}
