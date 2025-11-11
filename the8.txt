@@ -1,25 +1,16 @@
 #!/bin/perl
+
 use strict;
 use warnings;
 
 my $now = localtime;
 print "The date is $now\n\n";
 
-while (my $line = <STDIN>) {
-    chomp $line;
-    my $original = $line;
+printf "%-8s %-10s %-10s\n", "Number", "Square", "Cube";
+print "-" x 28 . "\n";
 
-    my $upper = $line;
-    $upper =~ s/([a-z])/chr(ord($1) - 32)/ge;
-
-    my $lower = $line;
-    $lower =~ s/([A-Z])/chr(ord($1) + 32)/ge;
-
-    my $title = $lower;
-    $title =~ s/^([a-z])/chr(ord($1) - 32)/e;
-
-    print "Original: $original\n";
-    print "Uppercase: $upper\n";
-    print "Lowercase: $lower\n";
-    print "Title case: $title\n\n";
+for (my $i = 4; $i <= 100; $i += 4) {
+    my $square = $i * $i;
+    my $cube   = $i * $i * $i;
+    printf "%-8d %-10d %-10d\n", $i, $square, $cube;
 }
