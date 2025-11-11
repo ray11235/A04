@@ -1,50 +1,57 @@
-#!/bin/perl
-
+#!/usr/bin/perl
 use strict;
 use warnings;
+use Time::Piece;
 
 my $now = localtime;
 print "The date is $now\n\n";
 
-print "Please enter a Perl variable name: ";
-chomp(my $var = <STDIN>);
-
-my $type = '';
-my $valid = 0;
-my $length = length($var);
-
-if ($var =~ /^\$([a-zA-Z_])([a-zA-Z]*)$/) {
-    $type = 'scalar';
-    $valid = 1;
-} elsif ($var =~ /^\@([a-zA-Z_])([a-zA-Z]*)$/) {
-    $type = 'array';
-    $valid = 1;
-} elsif ($var =~ /^\%([a-zA-Z_])([a-zA-Z]*)$/) {
-    $type = 'hash';
-    $valid = 1;
-} else {
-    $type = 'unknown';
-    $valid = 0;
+if (@ARGV == 0) {
+    print "No files were provided on the command line.\n";
+    exit 0;
 }
 
-print "\n--- Validation Results ---\n";
-print "Variable name: '$var'\n";
-print "Length: $length\n";
+my $oldest_file = "";
+my $newest_file = "";
+my $oldest_mtime = -1;
+my $newest_mtime = -1;
+my $current_time = time();
 
-if ($valid) {
-    print "Valid: Yes\n";
-    print "Type: $type\n";
-} else {
-    print "Valid: No\n";
-    if ($var eq '') {
-        print "Reason: Empty input.\n";
-    } elsif ($var !~ /^[\$\@\%]/) {
-        print "Reason: Must start with \$, \@, or %.\n";
-    } elsif ($var !~ /^[\$\@\%][a-zA-Z_]/) {
-        print "Reason: Second character must be a letter or underscore.\n";
-    } else {
-        print "Reason: Remaining characters must be letters only.\n";
+foreach my $file (@ARGV) {
+    unless (-e $file) {
+        warn "File '$file' does not exist, skipping.\n";
+        next;
+    }
+
+    unless (-f $file) {
+        warn " '$file' is not a regular file, skipping.\n";
+        next;
+    }
+
+    my $mtime = (stat($file))[9];
+    if ($mtime < 0) {
+        warn "Cannot get modification time for '$file', skipping.\n";
+        next;
+    }
+
+    if ($oldest_mtime == -1 || $mtime < $oldest_mtime) {
+        $oldest_mtime = $mtime;
+        $oldest_file = $file;
+    }
+
+    if ($newest_mtime == -1 || $mtime > $newest_mtime) {
+        $newest_mtime = $mtime;
+        $newest_file = $file;
     }
 }
 
-print "\n";
+if ($oldest_mtime == -1) {
+    print "No valid files were found.\n";
+    exit 0;
+}
+
+my $age_oldest = ($current_time - $oldest_mtime) / 86_400;
+my $age_newest = ($current_time - $newest_mtime) / 86_400;
+
+printf "Oldest file: %s (age: %.5f days)\n", $oldest_file, $age_oldest;
+printf "Newest file: %s (age: %.5f days)\n", $newest_file, $age_newest;
