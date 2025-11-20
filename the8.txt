@@ -1,16 +1,40 @@
-#!/bin/perl
-
+#!/usr/bin/perl
 use strict;
 use warnings;
 
+my $dir = $ARGV[0] // ".";
+
 my $now = localtime;
-print "The date is $now\n\n";
+print "The current date and time is: $now\n";
 
-printf "%-8s %-10s %-10s\n", "Number", "Square", "Cube";
-print "-" x 28 . "\n";
+opendir(my $dh, $dir) or die "Cannot open directory '$dir': $!";
 
-for (my $i = 4; $i <= 100; $i += 4) {
-    my $square = $i * $i;
-    my $cube   = $i * $i * $i;
-    printf "%-8d %-10d %-10d\n", $i, $square, $cube;
+my @entries = readdir($dh);
+closedir($dh);
+
+my $file_count = 0;
+my $total_size = 0;
+
+foreach my $entry (@entries) {
+
+    my $path = "$dir/$entry";
+
+    next unless -f $path;
+
+    $file_count++;
+    $total_size += -s $path;   # -s returns the file size in bytes
 }
+
+my $size_formatted = $total_size;
+my @units = ("bytes", "KB", "MB", "GB");
+for my $unit (@units) {
+    last if $size_formatted < 1024;
+    $size_formatted /= 1024;
+}
+$size_formatted = sprintf("%.2f %s", $size_formatted, $units[0]);
+$size_formatted =~ s/\.00 bytes$/ bytes/;
+
+print "The directory '$dir' contains $file_count regular file(s).\n";
+print "The total size of all regular files is $total_size bytes ($size_formatted).\n";
+
+exit 0;
