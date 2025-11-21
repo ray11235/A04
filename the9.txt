@@ -1,57 +1,17 @@
-#!/usr/bin/perl
+#!/bin/perl
+
 use strict;
 use warnings;
-use Time::Piece;
 
 my $now = localtime;
-print "The date is $now\n\n";
+print "The current date and time is: $now\n\n";
 
-if (@ARGV == 0) {
-    print "No files were provided on the command line.\n";
-    exit 0;
+my @first_names = qw(Tom Will Lady Brad Leonardo Julia Scarlett Natalie Emma Ryan);
+my @last_names  = qw(Cruise Smith Gaga Pitt DiCaprio Roberts Johansson Portman Watson Gosling);
+
+my $index = 1;
+while (my ($i, $first) = each @first_names) {
+    my $last = $last_names[$i];   # same index in the other array
+    print "Person #$index: $first $last\n";
+    $index++;
 }
-
-my $oldest_file = "";
-my $newest_file = "";
-my $oldest_mtime = -1;
-my $newest_mtime = -1;
-my $current_time = time();
-
-foreach my $file (@ARGV) {
-    unless (-e $file) {
-        warn "File '$file' does not exist, skipping.\n";
-        next;
-    }
-
-    unless (-f $file) {
-        warn " '$file' is not a regular file, skipping.\n";
-        next;
-    }
-
-    my $mtime = (stat($file))[9];
-    if ($mtime < 0) {
-        warn "Cannot get modification time for '$file', skipping.\n";
-        next;
-    }
-
-    if ($oldest_mtime == -1 || $mtime < $oldest_mtime) {
-        $oldest_mtime = $mtime;
-        $oldest_file = $file;
-    }
-
-    if ($newest_mtime == -1 || $mtime > $newest_mtime) {
-        $newest_mtime = $mtime;
-        $newest_file = $file;
-    }
-}
-
-if ($oldest_mtime == -1) {
-    print "No valid files were found.\n";
-    exit 0;
-}
-
-my $age_oldest = ($current_time - $oldest_mtime) / 86_400;
-my $age_newest = ($current_time - $newest_mtime) / 86_400;
-
-printf "Oldest file: %s (age: %.5f days)\n", $oldest_file, $age_oldest;
-printf "Newest file: %s (age: %.5f days)\n", $newest_file, $age_newest;
