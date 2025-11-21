@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-my $dir = $ARGV[0] // ".";
+my $dir = $ARGV[0];
 
 my $now = localtime;
 print "The current date and time is: $now\n";
